@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>My Week</title>
+<link href="https://fonts.googleapis.com/css2?family=Helvetica+Neue:wght@300;400;500;700&family=Trebuchet+MS&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  background: #b0b8c8;
+  background-image:
+    radial-gradient(ellipse at top, #c8d4e8 0%, #8a96aa 100%);
+  min-height: 100dvh;
+  padding-bottom: 20px;
+}
+
+/* ── TOP HEADER BAR ── */
+header {
+  background: linear-gradient(180deg, #5a7ab8 0%, #3a5a98 40%, #2a4a88 100%);
+  border-bottom: 2px solid #1a3a78;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.25);
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.nav-btn {
+  width: 38px; height: 38px;
+  background: linear-gradient(180deg, #6a8acc 0%, #3a5aaa 50%, #2a4a9a 100%);
+  border: 1px solid #1a3a88;
+  border-radius: 8px;
+  box-shadow:
+    0 2px 4px rgba(0,0,0,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.3),
+    inset 0 -1px 0 rgba(0,0,0,0.2);
+  color: #fff;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .1s;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  flex-shrink: 0;
+}
+.nav-btn:active {
+  background: linear-gradient(180deg, #2a4a9a 0%, #3a5aaa 100%);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.5), inset 0 1px 3px rgba(0,0,0,0.3);
+  transform: translateY(1px);
+}
+
+.header-center { flex: 1; text-align: center; }
+.week-label {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  letter-spacing: .02em;
+}
+.week-sub {
+  font-size: 10px;
+  color: rgba(255,255,255,0.7);
+  letter-spacing: .05em;
+  margin-top: 1px;
+  text-transform: uppercase;
+}
+
+.today-btn {
+  background: linear-gradient(180deg, #f0a020 0%, #d08000 50%, #b86000 100%);
+  border: 1px solid #904000;
+  border-radius: 8px;
+  box-shadow:
+    0 2px 4px rgba(0,0,0,0.4),
+    inset 0 1px 0 rgba(255,255,255,0.35),
+    inset 0 -1px 0 rgba(0,0,0,0.15);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 7px 10px;
+  cursor: pointer;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.4);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+  transition: all .1s;
+}
+.today-btn:active {
+  background: linear-gradient(180deg, #b86000 0%, #d08000 100%);
+  transform: translateY(1px);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.4);
+}
+
+/* ── DAY HEADER ROW ── */
+.day-header-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+  padding: 8px 6px 6px;
+  background: linear-gradient(180deg, #d8e0f0 0%, #c0cce0 100%);
+  border-bottom: 1px solid #8a9ab8;
+  box-shadow: inset 0 -2px 4px rgba(0,0,0,0.1);
+}
+
+.day-col-hdr {
+  text-align: center;
+  padding: 5px 2px;
+  border-radius: 6px;
+  cursor: pointer;
+  background: linear-gradient(180deg, #e8f0ff 0%, #d0daee 100%);
+  border: 1px solid #b0bcd8;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.7);
+  transition: all .1s;
+}
+.day-col-hdr:active { transform: scale(.95); }
+
+.day-col-hdr.is-today {
+  background: linear-gradient(180deg, #fff0c0 0%, #f0d060 100%);
+  border-color: #c0a000;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.8);
+}
+
+.day-col-hdr .dow {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: #4a5a7a;
+}
+.day-col-hdr .dnum {
+  font-size: 18px;
+  font-weight: 300;
+  color: #1a2a4a;
+  line-height: 1.1;
+}
+.day-col-hdr.is-today .dow { color: #806000; }
+.day-col-hdr.is-today .dnum { color: #503000; font-weight: 500; }
+.day-col-hdr.sat .dow, .day-col-hdr.sat .dnum { color: #2a50a0; }
+.day-col-hdr.sun .dow, .day-col-hdr.sun .dnum { color: #a02020; }
+
+.ev-count {
+  display: inline-block;
+  background: linear-gradient(180deg, #6090e0 0%, #3060c0 100%);
+  border: 1px solid #204090;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 8px;
+  font-weight: 700;
+  padding: 0 4px;
+  min-width: 14px;
+  height: 13px;
+  line-height: 12px;
+  margin-top: 2px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+/* ── SCROLL ── */
+.scroll-area {
+  padding: 8px 6px 100px;
+}
+
+/* ── 7-col grid ── */
+.week-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+  align-items: start;
+}
+
+.day-col { display: flex; flex-direction: column; gap: 3px; }
+
+/* ── EVENT CARD ── */
+.event-card {
+  background: linear-gradient(180deg, #ffffff 0%, #eef4ff 100%);
+  border: 1px solid #a8b8d8;
+  border-radius: 6px;
+  padding: 4px 5px;
+  cursor: pointer;
+  box-shadow:
+    0 2px 4px rgba(0,0,0,0.15),
+    inset 0 1px 0 rgba(255,255,255,0.9);
+  position: relative;
+  overflow: hidden;
+  animation: popIn .18s cubic-bezier(.34,1.4,.64,1);
+  transition: all .1s;
+}
+.event-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 40%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.6) 0%, transparent 100%);
+  border-radius: 6px 6px 0 0;
+  pointer-events: none;
+}
+.event-card:active {
+  transform: scale(.96);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+}
+
+/* color accent strip */
+.event-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, #4a80e0 0%, #2a60c0 100%);
+}
+.event-card.allday::before {
+  background: linear-gradient(180deg, #60b060 0%, #408040 100%);
+}
+.event-card.color-1::before { background: linear-gradient(180deg, #e06060 0%, #c03030 100%); }
+.event-card.color-2::before { background: linear-gradient(180deg, #e0a030 0%, #c07000 100%); }
+.event-card.color-3::before { background: linear-gradient(180deg, #8050d0 0%, #6030b0 100%); }
+
+.ev-time {
+  font-size: 8px;
+  color: #6070a0;
+  font-weight: 600;
+  letter-spacing: .02em;
+  margin-bottom: 2px;
+  padding-left: 2px;
+  text-transform: uppercase;
+}
+.ev-title {
+  font-size: 10px;
+  font-weight: 500;
+  color: #1a2a4a;
+  line-height: 1.35;
+  word-break: break-all;
+  padding-left: 2px;
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(.88); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* ── ADD BTN ── */
+.add-btn-col {
+  width: 100%;
+  min-height: 28px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(200,215,240,0.4) 100%);
+  border: 1px dashed #8a9aba;
+  border-radius: 6px;
+  color: #7888a8;
+  font-size: 18px;
+  font-weight: 300;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .1s;
+  margin-top: 2px;
+}
+.add-btn-col:active {
+  background: linear-gradient(180deg, #c0d0f0 0%, #a0b8e0 100%);
+  border-style: solid;
+  border-color: #4060c0;
+  color: #2040a0;
+}
+
+/* ── MODAL (sheet) ── */
+.overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,30,0.55);
+  z-index: 200;
+}
+.overlay.open { display: flex; align-items: flex-end; }
+
+.modal {
+  background: linear-gradient(180deg, #e8eef8 0%, #d8e0f0 100%);
+  width: 100%;
+  border-radius: 16px 16px 0 0;
+  border-top: 2px solid rgba(255,255,255,0.6);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.4);
+  padding-bottom: env(safe-area-inset-bottom, 16px);
+  animation: sheetUp .22s cubic-bezier(.34,1.1,.64,1);
+  max-height: 90dvh;
+  overflow-y: auto;
+}
+@keyframes sheetUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+.modal-handle {
+  width: 40px; height: 5px;
+  background: linear-gradient(90deg, #9aa8c0, #c0ccd8, #9aa8c0);
+  border-radius: 3px;
+  margin: 10px auto 0;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+  padding: 14px 16px 12px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid #b8c4d8;
+  background: linear-gradient(180deg, rgba(255,255,255,0.5) 0%, transparent 100%);
+}
+.modal-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a2a4a;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.7);
+  letter-spacing: .02em;
+}
+.modal-date {
+  font-size: 11px;
+  color: #5060a0;
+  font-weight: 600;
+  background: linear-gradient(180deg, #d8e8ff 0%, #b8cef0 100%);
+  border: 1px solid #8098d0;
+  border-radius: 10px;
+  padding: 3px 9px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.7);
+}
+
+.modal-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; }
+
+.field-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #3a4a6a;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-bottom: 4px;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.7);
+}
+
+/* allday toggle */
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: linear-gradient(180deg, #fff 0%, #eef2ff 100%);
+  border: 1px solid #b8c4d8;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.8);
+}
+.toggle-label { font-size: 13px; font-weight: 500; color: #1a2a4a; }
+
+.toggle-switch {
+  position: relative;
+  width: 46px; height: 26px;
+  flex-shrink: 0;
+}
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-track {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, #b0b8c8 0%, #9aa4b8 100%);
+  border-radius: 13px;
+  border: 1px solid #7888a8;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+  transition: all .2s;
+  cursor: pointer;
+}
+.toggle-track::before {
+  content: '';
+  position: absolute;
+  left: 2px; top: 2px;
+  width: 20px; height: 20px;
+  background: linear-gradient(180deg, #fff 0%, #e0e8f8 100%);
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.9);
+  transition: transform .2s;
+}
+input:checked + .toggle-track {
+  background: linear-gradient(180deg, #5090e0 0%, #2060c0 100%);
+  border-color: #1050a8;
+}
+input:checked + .toggle-track::before { transform: translateX(20px); }
+
+/* time row */
+.time-row {
+  display: flex; gap: 8px;
+}
+.time-select-wrap {
+  flex: 1;
+  position: relative;
+}
+.time-select-wrap select,
+.field-input {
+  width: 100%;
+  padding: 9px 10px;
+  background: linear-gradient(180deg, #fff 0%, #eef2ff 100%);
+  border: 1px solid #b0bcd8;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #1a2a4a;
+  font-family: inherit;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.08), 0 1px 0 rgba(255,255,255,0.9);
+  -webkit-appearance: none;
+  appearance: none;
+  transition: border-color .15s;
+}
+.time-select-wrap select:focus,
+.field-input:focus {
+  outline: none;
+  border-color: #3060c0;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.08), 0 0 0 2px rgba(48,96,192,0.25);
+}
+.time-select-wrap::after {
+  content: '▾';
+  position: absolute;
+  right: 9px; top: 50%; transform: translateY(-50%);
+  color: #6070a0;
+  font-size: 12px;
+  pointer-events: none;
+}
+
+textarea.field-input {
+  resize: none;
+  height: 80px;
+  line-height: 1.5;
+}
+
+/* color picker */
+.color-row {
+  display: flex; gap: 8px; flex-wrap: wrap;
+}
+.color-swatch {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.4);
+  transition: all .1s;
+}
+.color-swatch.active { border-color: #fff; box-shadow: 0 0 0 3px #2040a0, 0 2px 4px rgba(0,0,0,0.3); }
+.color-swatch:active { transform: scale(.9); }
+
+/* action buttons */
+.modal-actions {
+  display: flex; gap: 8px;
+  padding: 12px 16px 16px;
+  border-top: 1px solid #b8c4d8;
+  background: linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.3) 100%);
+}
+.btn-cancel {
+  flex: 1;
+  padding: 11px;
+  background: linear-gradient(180deg, #e8ecf4 0%, #ccd4e8 100%);
+  border: 1px solid #a0b0cc;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #3a4a6a;
+  cursor: pointer;
+  box-shadow: 0 2px 3px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.8);
+  font-family: inherit;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.6);
+  transition: all .1s;
+}
+.btn-cancel:active { transform: translateY(1px); box-shadow: 0 1px 2px rgba(0,0,0,0.15); }
+
+.btn-save {
+  flex: 2;
+  padding: 11px;
+  background: linear-gradient(180deg, #4888ee 0%, #1858d0 40%, #0848c0 100%);
+  border: 1px solid #0038a0;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,80,0.3), inset 0 1px 0 rgba(255,255,255,0.3);
+  font-family: inherit;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  letter-spacing: .03em;
+  transition: all .1s;
+}
+.btn-save:active { transform: translateY(1px); box-shadow: 0 1px 2px rgba(0,0,80,0.3); background: linear-gradient(180deg, #0848c0 0%, #1858d0 100%); }
+
+.btn-delete {
+  padding: 11px 14px;
+  background: linear-gradient(180deg, #f06060 0%, #c02020 50%, #a01010 100%);
+  border: 1px solid #800000;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(80,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.25);
+  font-family: inherit;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  transition: all .1s;
+}
+.btn-delete:active { transform: translateY(1px); }
+
+/* ── EMPTY COLUMN PLACEHOLDER ── */
+.col-empty {
+  padding: 6px 4px;
+  text-align: center;
+  color: #8898b8;
+  font-size: 9px;
+  opacity: .6;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <button class="nav-btn" id="prevWeek">&#8249;</button>
+  <div class="header-center">
+    <div class="week-label" id="weekLabel">---</div>
+    <div class="week-sub" id="weekSub">--- / ---</div>
+  </div>
+  <button class="today-btn" id="todayBtn">Today</button>
+  <button class="nav-btn" id="nextWeek">&#8250;</button>
+</header>
+
+<div class="day-header-row" id="dayHeaderRow"></div>
+
+<div class="scroll-area">
+  <div class="week-grid" id="weekGrid"></div>
+</div>
+
+<!-- Modal -->
+<div class="overlay" id="overlay">
+  <div class="modal" id="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <span class="modal-title" id="modalTitle">New Event</span>
+      <span class="modal-date" id="modalDate"></span>
+    </div>
+    <div class="modal-body">
+      <!-- All Day toggle -->
+      <div>
+        <div class="field-label">Duration</div>
+        <div class="toggle-row">
+          <span class="toggle-label">All Day</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="allDayToggle">
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+      </div>
+      <!-- Time -->
+      <div id="timeSection">
+        <div class="field-label">Time</div>
+        <div class="time-row">
+          <div class="time-select-wrap">
+            <select id="startTime"></select>
+          </div>
+          <div class="time-select-wrap">
+            <select id="endTime"></select>
+          </div>
+        </div>
+      </div>
+      <!-- Title -->
+      <div>
+        <div class="field-label">Title / Content</div>
+        <textarea class="field-input" id="eventTitle" placeholder="What's happening?"></textarea>
+      </div>
+      <!-- Color -->
+      <div>
+        <div class="field-label">Color</div>
+        <div class="color-row" id="colorRow">
+          <div class="color-swatch active" data-color="0" style="background:linear-gradient(135deg,#4a80e0,#2a60c0)"></div>
+          <div class="color-swatch" data-color="1" style="background:linear-gradient(135deg,#e06060,#c03030)"></div>
+          <div class="color-swatch" data-color="2" style="background:linear-gradient(135deg,#e0a030,#c07000)"></div>
+          <div class="color-swatch" data-color="3" style="background:linear-gradient(135deg,#8050d0,#6030b0)"></div>
+          <div class="color-swatch" data-color="4" style="background:linear-gradient(135deg,#40b060,#208040)"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions" id="modalActions">
+      <button class="btn-cancel" id="btnCancel">Cancel</button>
+      <button class="btn-save" id="btnSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── STATE ──
+const DAYS_JP = ['日','月','火','水','木','金','土'];
+const DAYS_EN = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+let weekOffset = 0;
+let events = JSON.parse(localStorage.getItem('weeklyEvents') || '{}');
+let editing = null; // {dayKey, idx} or null
+let currentDayKey = null;
+let selectedColor = 0;
+
+// ── TIME OPTIONS ──
+const timeOpts = [];
+for (let h = 0; h < 24; h++) {
+  for (let m of [0, 15, 30, 45]) {
+    const hh = String(h).padStart(2,'0');
+    const mm = String(m).padStart(2,'0');
+    timeOpts.push(`${hh}:${mm}`);
+  }
+}
+const startSel = document.getElementById('startTime');
+const endSel   = document.getElementById('endTime');
+timeOpts.forEach(t => {
+  startSel.innerHTML += `<option value="${t}">${t}</option>`;
+  endSel.innerHTML   += `<option value="${t}">${t}</option>`;
+});
+
+// ── HELPERS ──
+function getMonday(offset) {
+  const d = new Date();
+  const day = d.getDay();
+  const diff = (day === 0 ? -6 : 1 - day) + offset * 7;
+  d.setDate(d.getDate() + diff);
+  d.setHours(0,0,0,0);
+  return d;
+}
+function fmt(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function fmtDisp(d) {
+  return `${d.getMonth()+1}/${d.getDate()}`;
+}
+function today() {
+  const d = new Date(); d.setHours(0,0,0,0); return fmt(d);
+}
+
+// ── RENDER ──
+function render() {
+  const mon = getMonday(weekOffset);
+  const sun = new Date(mon); sun.setDate(mon.getDate() + 6);
+  const yr  = mon.getFullYear();
+
+  document.getElementById('weekLabel').textContent =
+    `${yr}  Week`;
+  document.getElementById('weekSub').textContent =
+    `${fmtDisp(mon)} – ${fmtDisp(sun)}`;
+
+  const hdr  = document.getElementById('dayHeaderRow');
+  const grid = document.getElementById('weekGrid');
+  hdr.innerHTML = '';
+  grid.innerHTML = '';
+
+  const td = today();
+
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(mon); d.setDate(mon.getDate() + i);
+    const key = fmt(d);
+    const dow = d.getDay(); // 0=Sun..6=Sat
+    const evList = events[key] || [];
+
+    // header cell
+    const hc = document.createElement('div');
+    hc.className = 'day-col-hdr' +
+      (key === td ? ' is-today' : '') +
+      (dow === 6 ? ' sat' : '') +
+      (dow === 0 ? ' sun' : '');
+    hc.innerHTML = `
+      <div class="dow">${DAYS_EN[dow]}</div>
+      <div class="dnum">${d.getDate()}</div>
+      ${evList.length ? `<div class="ev-count">${evList.length}</div>` : ''}
+    `;
+    hc.onclick = () => openModal(key, null);
+    hdr.appendChild(hc);
+
+    // grid col
+    const col = document.createElement('div');
+    col.className = 'day-col';
+
+    if (evList.length === 0) {
+      col.innerHTML = `<div class="col-empty">—</div>`;
+    } else {
+      evList.forEach((ev, idx) => {
+        const card = document.createElement('div');
+        card.className = `event-card ${ev.allDay ? 'allday' : ''} color-${ev.color || 0}`;
+        card.innerHTML = `
+          ${!ev.allDay ? `<div class="ev-time">${ev.start}${ev.end ? '–'+ev.end : ''}</div>` : ''}
+          <div class="ev-title">${ev.title || '(no title)'}</div>
+        `;
+        card.onclick = (e) => { e.stopPropagation(); openModal(key, idx); };
+        col.appendChild(card);
+      });
+    }
+
+    // add button
+    const addBtn = document.createElement('button');
+    addBtn.className = 'add-btn-col';
+    addBtn.textContent = '+';
+    addBtn.onclick = () => openModal(key, null);
+    col.appendChild(addBtn);
+
+    grid.appendChild(col);
+  }
+}
+
+// ── MODAL ──
+function openModal(dayKey, idx) {
+  currentDayKey = dayKey;
+  editing = idx !== null ? idx : null;
+
+  const d = new Date(dayKey + 'T00:00:00');
+  const dow = d.getDay();
+  document.getElementById('modalDate').textContent =
+    `${d.getMonth()+1}/${d.getDate()} (${DAYS_JP[dow]})`;
+
+  if (editing !== null) {
+    document.getElementById('modalTitle').textContent = 'Edit Event';
+    const ev = events[dayKey][editing];
+    document.getElementById('allDayToggle').checked = !!ev.allDay;
+    document.getElementById('eventTitle').value = ev.title || '';
+    startSel.value = ev.start || '09:00';
+    endSel.value   = ev.end   || '10:00';
+    setColor(ev.color || 0);
+    toggleTimeSection(!ev.allDay);
+    // Show delete btn
+    document.getElementById('modalActions').innerHTML = `
+      <button class="btn-cancel" id="btnCancel">Cancel</button>
+      <button class="btn-delete" id="btnDelete">Delete</button>
+      <button class="btn-save" id="btnSave">Save</button>
+    `;
+    document.getElementById('btnDelete').onclick = deleteEvent;
+  } else {
+    document.getElementById('modalTitle').textContent = 'New Event';
+    document.getElementById('allDayToggle').checked = false;
+    document.getElementById('eventTitle').value = '';
+    startSel.value = '09:00';
+    endSel.value   = '10:00';
+    setColor(0);
+    toggleTimeSection(true);
+    document.getElementById('modalActions').innerHTML = `
+      <button class="btn-cancel" id="btnCancel">Cancel</button>
+      <button class="btn-save" id="btnSave">Save</button>
+    `;
+  }
+
+  document.getElementById('btnCancel').onclick = closeModal;
+  document.getElementById('btnSave').onclick   = saveEvent;
+
+  document.getElementById('overlay').classList.add('open');
+  setTimeout(() => document.getElementById('eventTitle').focus(), 300);
+}
+
+function closeModal() {
+  document.getElementById('overlay').classList.remove('open');
+  editing = null;
+}
+
+function toggleTimeSection(show) {
+  document.getElementById('timeSection').style.display = show ? '' : 'none';
+}
+
+document.getElementById('allDayToggle').onchange = function() {
+  toggleTimeSection(!this.checked);
+};
+
+function setColor(c) {
+  selectedColor = c;
+  document.querySelectorAll('.color-swatch').forEach(s => {
+    s.classList.toggle('active', +s.dataset.color === c);
+  });
+}
+document.getElementById('colorRow').addEventListener('click', e => {
+  const sw = e.target.closest('.color-swatch');
+  if (sw) setColor(+sw.dataset.color);
+});
+
+function saveEvent() {
+  const allDay = document.getElementById('allDayToggle').checked;
+  const title  = document.getElementById('eventTitle').value.trim();
+  const start  = startSel.value;
+  const end    = endSel.value;
+
+  const ev = { title, allDay, color: selectedColor,
+    start: allDay ? null : start,
+    end:   allDay ? null : end };
+
+  if (!events[currentDayKey]) events[currentDayKey] = [];
+  if (editing !== null) {
+    events[currentDayKey][editing] = ev;
+  } else {
+    events[currentDayKey].push(ev);
+  }
+  // sort by start time
+  events[currentDayKey].sort((a,b) => {
+    if (a.allDay && !b.allDay) return -1;
+    if (!a.allDay && b.allDay) return 1;
+    return (a.start||'').localeCompare(b.start||'');
+  });
+
+  persist();
+  closeModal();
+  render();
+}
+
+function deleteEvent() {
+  if (!confirm('Delete this event?')) return;
+  events[currentDayKey].splice(editing, 1);
+  if (events[currentDayKey].length === 0) delete events[currentDayKey];
+  persist();
+  closeModal();
+  render();
+}
+
+function persist() {
+  localStorage.setItem('weeklyEvents', JSON.stringify(events));
+}
+
+// close on overlay bg click
+document.getElementById('overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('overlay')) closeModal();
+});
+
+// ── NAV ──
+document.getElementById('prevWeek').onclick  = () => { weekOffset--; render(); };
+document.getElementById('nextWeek').onclick  = () => { weekOffset++; render(); };
+document.getElementById('todayBtn').onclick  = () => { weekOffset = 0; render(); };
+
+render();
+</script>
+</body>
+</html>
